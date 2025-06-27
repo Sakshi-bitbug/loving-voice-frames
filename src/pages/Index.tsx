@@ -7,63 +7,6 @@ import { AddMemoryForm } from '../components/AddMemoryForm';
 import { Play, Grid, Users, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const memories = [
-  {
-    id: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=300&fit=crop',
-    personName: "Sarah",
-    relationship: "Daughter",
-    category: "family",
-    voiceMessage: "This is Sarah, your daughter. We took this photo last Christmas when you made your famous apple pie.",
-    description: "Christmas Day 2023 - Making apple pie together"
-  },
-  {
-    id: 2,
-    imageUrl: 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=400&h=300&fit=crop',
-    personName: "Emma",
-    relationship: "Granddaughter",
-    category: "family",
-    voiceMessage: "Hi Grandma! This is Emma, your granddaughter. Remember when we went to the park and fed the ducks?",
-    description: "Emma at the park - Duck feeding day"
-  },
-  {
-    id: 3,
-    imageUrl: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=300&fit=crop',
-    personName: "Living Room",
-    relationship: "Home",
-    category: "places",
-    voiceMessage: "This is your favorite living room where you love to read and watch TV. Your blue chair is right by the window.",
-    description: "Your comfortable living room"
-  },
-  {
-    id: 4,
-    imageUrl: 'https://images.unsplash.com/photo-1466721591366-2d5fba72006d?w=400&h=300&fit=crop',
-    personName: "Safari Trip",
-    relationship: "Memory",
-    category: "events",
-    voiceMessage: "Remember our wonderful safari trip? You were so excited to see the zebras and antelopes. What an adventure we had!",
-    description: "African Safari Adventure 2019"
-  },
-  {
-    id: 5,
-    imageUrl: 'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=400&h=300&fit=crop',
-    personName: "Farm Visit",
-    relationship: "Memory",
-    category: "events",
-    voiceMessage: "This was at Uncle Tom's farm. You loved petting the gentle ox and talking about your childhood on the farm.",
-    description: "Visit to Uncle Tom's farm"
-  },
-  {
-    id: 6,
-    imageUrl: 'https://images.unsplash.com/photo-1452960962994-acf4fd70b632?w=400&h=300&fit=crop',
-    personName: "David",
-    relationship: "Son",
-    category: "family",
-    voiceMessage: "This is David, your son. We went to see the sheep together. You said they reminded you of your father's farm.",
-    description: "David and the sheep - Countryside walk"
-  }
-];
-
 const categories = [
   { id: 'all', name: 'All Memories', icon: Grid },
   { id: 'family', name: 'Family', icon: Users },
@@ -78,12 +21,9 @@ const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [userMemories, setUserMemories] = useState<Memory[]>([]);
 
-  // Combine default memories with user-added memories
-  const allMemories = [...memories, ...userMemories];
-
   const filteredMemories = selectedCategory === 'all' 
-    ? allMemories 
-    : allMemories.filter(memory => memory.category === selectedCategory);
+    ? userMemories 
+    : userMemories.filter(memory => memory.category === selectedCategory);
 
   const handleAddMemory = (newMemory: Omit<Memory, 'id'>) => {
     const memoryWithId: Memory = {
@@ -163,12 +103,21 @@ const Index = () => {
         <div className="mt-8">
           {filteredMemories.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xl text-gray-500 mb-4">No memories found for this category</p>
+              <div className="mb-6">
+                <Upload className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+                <h2 className="text-2xl font-bold text-gray-600 mb-2">No Memories Yet</h2>
+                <p className="text-xl text-gray-500 mb-6">
+                  {selectedCategory === 'all' 
+                    ? 'Start building your memory book by adding your first photo and voice message'
+                    : `No memories found in the ${categories.find(c => c.id === selectedCategory)?.name} category`
+                  }
+                </p>
+              </div>
               <Button 
                 onClick={() => setShowAddForm(true)}
-                className="bg-green-500 hover:bg-green-600 text-white"
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg rounded-full shadow-lg"
               >
-                <Upload className="mr-2 h-4 w-4" />
+                <Upload className="mr-2 h-5 w-5" />
                 Add Your First Memory
               </Button>
             </div>
