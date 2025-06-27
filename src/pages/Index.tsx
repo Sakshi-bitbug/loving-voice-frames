@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { MemoryCard } from '../components/MemoryCard';
+import { MemoryCard, Memory } from '../components/MemoryCard';
 import { CategoryFilter } from '../components/CategoryFilter';
 import { Slideshow } from '../components/Slideshow';
-import { Play, Grid, Users } from 'lucide-react';
+import { AddMemoryForm } from '../components/AddMemoryForm';
+import { Play, Grid, Users, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const memories = [
@@ -74,10 +75,35 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isSlideshow, setIsSlideshow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [userMemories, setUserMemories] = useState<Memory[]>([]);
+
+  // Combine default memories with user-added memories
+  const allMemories = [...memories, ...userMemories];
 
   const filteredMemories = selectedCategory === 'all' 
-    ? memories 
-    : memories.filter(memory => memory.category === selectedCategory);
+    ? allMemories 
+    : allMemories.filter(memory => memory.category === selectedCategory);
+
+  const handleAddMemory = (newMemory: Omit<Memory, 'id'>) => {
+    const memoryWithId: Memory = {
+      ...newMemory,
+      id: Date.now() // Simple ID generation
+    };
+    setUserMemories(prev => [...prev, memoryWithId]);
+    setShowAddForm(false);
+  };
+
+  if (showAddForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-amber-50 py-8">
+        <AddMemoryForm 
+          onAddMemory={handleAddMemory}
+          onCancel={() => setShowAddForm(false)}
+        />
+      </div>
+    );
+  }
 
   if (isSlideshow) {
     return (
@@ -104,14 +130,23 @@ const Index = () => {
                 Your precious memories with loved ones
               </p>
             </div>
-            <Button 
-              onClick={() => setIsSlideshow(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 text-lg rounded-full shadow-lg"
-              disabled={filteredMemories.length === 0}
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Start Slideshow
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => setShowAddForm(true)}
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 text-lg rounded-full shadow-lg"
+              >
+                <Upload className="mr-2 h-5 w-5" />
+                Add Memory
+              </Button>
+              <Button 
+                onClick={() => setIsSlideshow(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 text-lg rounded-full shadow-lg"
+                disabled={filteredMemories.length === 0}
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Start Slideshow
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -128,7 +163,14 @@ const Index = () => {
         <div className="mt-8">
           {filteredMemories.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xl text-gray-500">No memories found for this category</p>
+              <p className="text-xl text-gray-500 mb-4">No memories found for this category</p>
+              <Button 
+                onClick={() => setShowAddForm(true)}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Add Your First Memory
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
